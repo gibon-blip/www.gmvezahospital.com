@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeva Medical Centre - Patient Registration</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --blue:#075da8;
+  --pale:#eef7ff;
+  --gold:#f3c640;
+  --green:#178344;
+  --red:#c93636;
+  --border:#d5e0e9;
+}
+body{
+  margin:0;
+  background:#eef3f7;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#233342;
+}
+.container{
+  max-width:1250px;
+  margin:24px auto;
+  padding:0 15px;
+}
+.card{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 4px 18px #16324a14;
+  overflow:hidden;
+  margin-bottom:22px;
+}
+.header{
+  background:var(--blue);
+  color:#fff;
+  padding:22px 25px;
+  border-bottom:5px solid var(--gold);
+}
+.header h1{margin:0;font-size:25px}
+.header p{margin:7px 0 0;font-size:13px}
+.content{padding:24px}
+h2{
+  color:var(--blue);
+  font-size:18px;
+  margin:0 0 18px;
+  padding-left:11px;
+  border-left:5px solid var(--gold);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.field{display:flex;flex-direction:column;min-width:0}
+label{font-size:13px;font-weight:bold;margin-bottom:7px}
+input,select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font:14px Arial;
+  background:#fff;
+  min-height:40px;
+}
+input:focus,select:focus{
+  outline:2px solid #b8dcff;
+  border-color:var(--blue);
+}
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+button{
+  border:0;
+  border-radius:6px;
+  padding:11px 16px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:13px;
+}
+button:focus-visible{
+  outline:3px solid #9ccfff;
+  outline-offset:2px;
+}
+.primary{background:var(--blue);color:#fff}
+.success{background:var(--green);color:#fff}
+.gold{background:var(--gold);color:#222}
+.danger{background:var(--red);color:#fff}
+.secondary{background:#e8eef3;color:#233342}
+.search-row{
+  display:flex;
+  gap:10px;
+  align-items:end;
+  flex-wrap:wrap;
+}
+.search-row .field{flex:1;min-width:220px}
+.note{font-size:12px;color:#5d6b77;line-height:1.5}
+.table-wrap{overflow-x:auto;margin-top:18px}
+table{width:100%;border-collapse:collapse;min-width:1150px}
+th{
+  background:var(--pale);
+  color:var(--blue);
+  text-align:left;
+  font-size:12px;
+  padding:11px;
+  border-bottom:1px solid var(--border);
+}
+td{
+  font-size:12px;
+  padding:10px;
+  border-bottom:1px solid #e8edf1;
+  vertical-align:top;
+}
+td button{padding:7px 9px;margin:2px}
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-weight:bold;
+  font-size:11px;
+  white-space:nowrap;
+}
+.status-cleared{
+  background:#e6f5eb;
+  color:#176b37;
+}
+.status-uncleared{
+  background:#fde8e8;
+  color:#a32121;
+}
+.status-inpatient{
+  background:#e5efff;
+  color:#075da8;
+}
+.status-outpatient{
+  background:#fff3d2;
+  color:#805d00;
+}
+.clearance-options{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.clearance-options label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  cursor:pointer;
+  margin:0;
+  min-height:40px;
+}
+.clearance-options input{
+  width:auto;
+  min-height:auto;
+  margin:0;
+  accent-color:var(--blue);
+}
+.clearance-options .cleared-option:has(input:checked){
+  background:#e6f5eb;
+  border-color:var(--green);
+  color:#176b37;
+}
+.clearance-options .uncleared-option:has(input:checked){
+  background:#fde8e8;
+  border-color:var(--red);
+  color:#a32121;
+}
+.empty{text-align:center;color:#657482;padding:22px}
+.footer{text-align:center;font-size:12px;color:#657482;padding:0 10px 22px}
+@media(max-width:800px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content{padding:18px}
+  .header h1{font-size:21px}
+}
+@media(max-width:520px){
+  .grid{grid-template-columns:1fr}
+  .header{padding:18px}
+  .content{padding:15px}
+  .actions button{flex:1}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<section class="card">
+  <header class="header">
+    <h1>ZEVA MEDICAL CENTRE</h1>
+    <p>Patient Registration — Your Health, Our Priority</p>
+    <p>P.O. Box 1722-40200 | Tel: 0708534991 | zevamedical@gmail.com</p>
+  </header>
+
+  <div class="content">
+    <h2>Register Patient Details</h2>
+
+    <form id="patientForm">
+      <input type="hidden" id="recordId">
+
+      <div class="grid">
+
+        <div class="field">
+          <label for="firstName">First Name *</label>
+          <input id="firstName" required>
+        </div>
+
+        <div class="field">
+          <label for="secondName">Second Name</label>
+          <input id="secondName">
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last Name *</label>
+          <input id="lastName" required>
+        </div>
+
+        <div class="field">
+          <label for="idNumber">ID Number</label>
+          <input id="idNumber">
+        </div>
+
+        <div class="field">
+          <label for="phoneNumber">Phone Number *</label>
+          <input id="phoneNumber" type="tel" required>
+        </div>
+
+        <div class="field">
+          <label for="age">Age</label>
+          <input id="age" type="number" min="0" max="125">
+        </div>
+
+        <div class="field">
+          <label for="nextOfKin">Next of Kin</label>
+          <input id="nextOfKin">
+        </div>
+
+        <div class="field">
+          <label for="kinNumber">Next of Kin Phone Number</label>
+          <input id="kinNumber" type="tel">
+        </div>
+
+        <div class="field">
+          <label for="resident">Resident / Village</label>
+          <input id="resident">
+        </div>
+
+        <div class="field">
+          <label for="chiefName">Chief's Name</label>
+          <input id="chiefName">
+        </div>
+
+        <div class="field">
+          <label for="patientType">Patient Type *</label>
+          <select id="patientType" required>
+            <option value="Outpatient">Outpatient</option>
+            <option value="Inpatient">Inpatient</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="registrationDate">Registration Date</label>
+          <input id="registrationDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="dateIn">Date In *</label>
+          <input id="dateIn" type="date" required>
+        </div>
+
+        <div class="field">
+          <label for="dateOut">Date Out / Discharge Date</label>
+          <input id="dateOut" type="date">
+        </div>
+
+        <div class="field">
+          <label>Clearance Status *</label>
+          <div class="clearance-options">
+            <label class="cleared-option">
+              <input type="radio" name="clearanceStatus"
+                     value="Cleared" required>
+              Cleared
+            </label>
+            <label class="uncleared-option">
+              <input type="radio" name="clearanceStatus"
+                     value="Uncleared" required checked>
+              Uncleared
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit" id="saveButton">
+          Save Patient
+        </button>
+
+        <button class="gold" type="button" onclick="clearForm()">
+          New / Clear Form
+        </button>
+
+        <button class="success" type="button" onclick="downloadCSV()">
+          Download Patient Records (CSV)
+        </button>
+      </div>
+
+      <p class="note">
+        Patient records are saved in this browser on this computer.
+        They are not automatically shared with other computers.
+        Keep this device secure because patient details are confidential.
+        Date Out may be left blank while a patient is still admitted.
+      </p>
+    </form>
+  </div>
+</section>
+
+<section class="card">
+  <div class="content">
+    <h2>Search Registered Patients</h2>
+
+    <div class="search-row">
+      <div class="field">
+        <label for="searchName">Search by Patient Name</label>
+        <input id="searchName" placeholder="Enter all or part of a name">
+      </div>
+
+      <div class="field">
+        <label for="searchId">Search by ID Number</label>
+        <input id="searchId" placeholder="Enter ID number">
+      </div>
+
+      <button class="primary" type="button" onclick="searchPatients()">
+        Search
+      </button>
+
+      <button class="secondary" type="button" onclick="resetSearch()">
+        Show All
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>ID Number</th>
+            <th>Phone</th>
+            <th>Age</th>
+            <th>Next of Kin</th>
+            <th>Kin Phone</th>
+            <th>Residence</th>
+            <th>Chief</th>
+            <th>Patient Type</th>
+            <th>Registration Date</th>
+            <th>Date In</th>
+            <th>Date Out</th>
+            <th>Clearance Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientsTable">
+          <tr>
+            <td colspan="14" class="empty">
+              No patient records saved yet.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="footer">Zeva Medical Centre — Patient Registration Records</div>
+</div>
+
+<script>
+const STORAGE_KEY = "zevaPatientRegistrationRecords";
+
+function today(){
+  const now = new Date();
+  const localDate = new Date(
+    now.getTime() - now.getTimezoneOffset() * 60000
+  );
+  return localDate.toISOString().slice(0,10);
+}
+
+function getPatients(){
+  try{
+    const records = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || "[]"
+    );
+    return Array.isArray(records) ? records : [];
+  }catch(error){
+    return [];
+  }
+}
+
+function savePatients(records){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    return true;
+  }catch(error){
+    alert("Unable to save records. Browser storage may be full or unavailable.");
+    return false;
+  }
+}
+
+function value(id){
+  return document.getElementById(id).value.trim();
+}
+
+function fullName(patient){
+  return [
+    patient.firstName,
+    patient.secondName,
+    patient.lastName
+  ].filter(Boolean).join(" ");
+}
+
+function safe(text){
+  return String(text ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[ch]));
+}
+
+function selectedClearance(){
+  const selected = document.querySelector(
+    'input[name="clearanceStatus"]:checked'
+  );
+  return selected ? selected.value : "Uncleared";
+}
+
+function setClearance(status){
+  const radio = document.querySelector(
+    'input[name="clearanceStatus"][value="' +
+    (status === "Cleared" ? "Cleared" : "Uncleared") +
+    '"]'
+  );
+  if(radio) radio.checked = true;
+}
+
+document.getElementById("patientForm").addEventListener(
+  "submit",
+  function(event){
+    event.preventDefault();
+
+    const recordId = value("recordId");
+    const oldRecords = getPatients();
+    const oldPatient = oldRecords.find(item => item.id === recordId);
+
+    const patient = {
+      id: recordId || (
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2,9)
+      ),
+      firstName: value("firstName"),
+      secondName: value("secondName"),
+      lastName: value("lastName"),
+      idNumber: value("idNumber"),
+      phoneNumber: value("phoneNumber"),
+      nextOfKin: value("nextOfKin"),
+      kinNumber: value("kinNumber"),
+      resident: value("resident"),
+      chiefName: value("chiefName"),
+      patientType: value("patientType"),
+      age: value("age"),
+      registrationDate: value("registrationDate") || today(),
+      dateIn: value("dateIn"),
+      dateOut: value("dateOut"),
+      clearanceStatus: selectedClearance(),
+      savedAt: oldPatient ? oldPatient.savedAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if(!patient.firstName ||
+       !patient.lastName ||
+       !patient.phoneNumber){
+      alert("Enter the first name, last name and phone number.");
+      return;
+    }
+
+    if(!patient.dateIn){
+      alert("Please enter Date In.");
+      document.getElementById("dateIn").focus();
+      return;
+    }
+
+    if(patient.dateOut && patient.dateOut < patient.dateIn){
+      alert("Date Out cannot be earlier than Date In.");
+      document.getElementById("dateOut").focus();
+      return;
+    }
+
+    const existingIndex = oldRecords.findIndex(
+      item => item.id === patient.id
+    );
+
+    if(existingIndex >= 0){
+      oldRecords[existingIndex] = patient;
+    }else{
+      oldRecords.unshift(patient);
+    }
+
+    if(!savePatients(oldRecords)) return;
+
+    clearForm(false);
+    renderPatients();
+
+    alert(existingIndex >= 0
+      ? "Patient details updated successfully."
+      : "Patient registered and saved locally.");
+  }
+);
+
+function clearanceBadge(status){
+  const current = status === "Cleared" ? "Cleared" : "Uncleared";
+  const css = current === "Cleared"
+    ? "status-cleared"
+    : "status-uncleared";
+
+  return '<span class="status ' + css + '">' +
+    safe(current) + '</span>';
+}
+
+function patientTypeBadge(type){
+  const current = type || "Outpatient";
+  const css = current === "Inpatient"
+    ? "status-inpatient"
+    : "status-outpatient";
+
+  return '<span class="status ' + css + '">' +
+    safe(current) + '</span>';
+}
+
+function renderPatients(list = null){
+  const tbody = document.getElementById("patientsTable");
+  const records = list || getPatients();
+
+  if(!records.length){
+    tbody.innerHTML =
+      '<tr><td colspan="14" class="empty">' +
+      'No matching patient records found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = records.map(patient => `
+    <tr>
+      <td>${safe(fullName(patient))}</td>
+      <td>${safe(patient.idNumber || "—")}</td>
+      <td>${safe(patient.phoneNumber || "—")}</td>
+      <td>${safe(patient.age || "—")}</td>
+      <td>${safe(patient.nextOfKin || "—")}</td>
+      <td>${safe(patient.kinNumber || "—")}</td>
+      <td>${safe(patient.resident || "—")}</td>
+      <td>${safe(patient.chiefName || "—")}</td>
+      <td>${patientTypeBadge(patient.patientType)}</td>
+      <td>${safe(patient.registrationDate || "—")}</td>
+      <td>${safe(patient.dateIn || "—")}</td>
+      <td>${safe(patient.dateOut || "—")}</td>
+      <td>${clearanceBadge(patient.clearanceStatus)}</td>
+      <td>
+        <button type="button" class="primary"
+          onclick="editPatient('${safe(patient.id)}')">Edit</button>
+        <button type="button" class="danger"
+          onclick="deletePatient('${safe(patient.id)}')">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function searchPatients(){
+  const name = value("searchName").toLowerCase();
+  const id = value("searchId").toLowerCase();
+
+  const matches = getPatients().filter(patient => {
+    const patientName = fullName(patient).toLowerCase();
+    const patientId = String(patient.idNumber || "").toLowerCase();
+
+    return (!name || patientName.includes(name)) &&
+           (!id || patientId.includes(id));
+  });
+
+  renderPatients(matches);
+}
+
+function resetSearch(){
+  document.getElementById("searchName").value = "";
+  document.getElementById("searchId").value = "";
+  renderPatients();
+}
+
+document.getElementById("searchName").addEventListener(
+  "keydown", event => {
+    if(event.key === "Enter"){
+      event.preventDefault();
+      searchPatients();
+    }
+  }
+);
+
+document.getElementById("searchId").addEventListener(
+  "keydown", event => {
+    if(event.key === "Enter"){
+      event.preventDefault();
+      searchPatients();
+    }
+  }
+);
+
+function editPatient(id){
+  const patient = getPatients().find(item => item.id === id);
+  if(!patient) return;
+
+  const fields = [
+    "firstName","secondName","lastName","idNumber",
+    "phoneNumber","nextOfKin","kinNumber","resident",
+    "chiefName","patientType","age","registrationDate",
+    "dateIn","dateOut"
+  ];
+
+  document.getElementById("recordId").value = patient.id;
+
+  fields.forEach(field => {
+    document.getElementById(field).value = patient[field] || "";
+  });
+
+  setClearance(patient.clearanceStatus);
+
+  document.getElementById("saveButton").textContent =
+    "Update Patient";
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deletePatient(id){
+  const records = getPatients();
+  const patient = records.find(item => item.id === id);
+  if(!patient) return;
+
+  if(!confirm("Delete the record for " + fullName(patient) + "?")){
+    return;
+  }
+
+  const updatedRecords = records.filter(item => item.id !== id);
+
+  if(savePatients(updatedRecords)){
+    renderPatients();
+  }
+}
+
+function clearForm(clearSearchToo = true){
+  document.getElementById("patientForm").reset();
+  document.getElementById("recordId").value = "";
+
+  document.getElementById("patientType").value = "Outpatient";
+  document.getElementById("registrationDate").value = today();
+  document.getElementById("dateIn").value = today();
+  document.getElementById("dateOut").value = "";
+
+  setClearance("Uncleared");
+
+  document.getElementById("saveButton").textContent =
+    "Save Patient";
+
+  if(clearSearchToo) resetSearch();
+}
+
+function downloadCSV(){
+  const records = getPatients();
+
+  if(!records.length){
+    alert("There are no saved patient records to download.");
+    return;
+  }
+
+  const columns = [
+    ["First Name","firstName"],
+    ["Second Name","secondName"],
+    ["Last Name","lastName"],
+    ["ID Number","idNumber"],
+    ["Phone Number","phoneNumber"],
+    ["Age","age"],
+    ["Next of Kin","nextOfKin"],
+    ["Next of Kin Phone","kinNumber"],
+    ["Residence","resident"],
+    ["Chief's Name","chiefName"],
+    ["Patient Type","patientType"],
+    ["Registration Date","registrationDate"],
+    ["Date In","dateIn"],
+    ["Date Out","dateOut"],
+    ["Clearance Status","clearanceStatus"]
+  ];
+
+  const csvCell = val =>
+    '"' + String(val ?? "").replace(/"/g,'""') + '"';
+
+  const csv = [
+    columns.map(column => csvCell(column[0])).join(","),
+    ...records.map(patient =>
+      columns.map(column =>
+        csvCell(patient[column[1]])
+      ).join(",")
+    )
+  ].join("\r\n");
+
+  const blob = new Blob(
+    ["\ufeff" + csv],
+    {type:"text/csv;charset=utf-8;"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "Zeva_Medical_Centre_Patient_Records.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+document.getElementById("registrationDate").value = today();
+document.getElementById("dateIn").value = today();
+
+renderPatients();
+</script>
+</body>
+</html>

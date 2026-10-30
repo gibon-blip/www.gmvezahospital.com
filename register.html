@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GM Veza Hospital - Patient Registration & OPD Card</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+ --blue:#0066b3;
+ --deep-blue:#00365f;
+ --yellow:#f9c400;
+ --green:#138a3d;
+}
+
+html,body{
+ margin:0;
+ padding:0;
+ font-family:Arial,Helvetica,sans-serif;
+ color:#111;
+}
+
+body{
+ padding:15px;
+ background:
+ linear-gradient(rgba(235,245,251,.87),rgba(235,245,251,.87)),
+ url("gm.jpg") center/cover fixed;
+}
+
+.container{width:100%;max-width:1200px;margin:auto}
+
+.registration-panel,.search-panel,.storage-panel{
+ background:#fff;
+ border-radius:10px;
+ padding:18px;
+ margin-bottom:18px;
+ box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+.registration-panel h2,.search-panel h3,.storage-header h3{
+ margin:0 0 15px;
+ color:var(--deep-blue);
+}
+
+.registration-panel h2{text-align:center;font-size:23px}
+
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:10px;
+}
+
+.field{display:flex;flex-direction:column}
+.field label{font-size:13px;font-weight:bold;margin-bottom:4px}
+.field input,.field select{
+ width:100%;height:38px;border:1px solid #888;
+ border-radius:5px;padding:7px 9px;font-size:14px;
+}
+.field input:focus,.field select:focus{
+ outline:2px solid var(--blue);border-color:var(--blue)
+}
+
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+
+button{
+ border:0;border-radius:5px;padding:10px 16px;
+ font-size:14px;font-weight:bold;cursor:pointer;
+}
+button:hover{filter:brightness(.92)}
+.save-btn{background:var(--green);color:#fff}
+.print-btn,.load-btn{background:var(--blue);color:#fff}
+.clear-btn{background:#555;color:#fff}
+.delete-btn{background:#c62828;color:#fff}
+
+.search-box{
+ width:100%;height:40px;padding:8px 10px;
+ border:1px solid #888;border-radius:5px;font-size:14px;
+}
+.search-result{
+ margin-top:8px;border:1px solid #ccc;border-radius:6px;
+ padding:9px;display:flex;justify-content:space-between;
+ align-items:center;gap:10px;
+}
+.result-name{font-weight:bold;color:var(--deep-blue)}
+.result-buttons{display:flex;gap:5px;flex-shrink:0}
+.result-buttons button{padding:7px 10px;font-size:12px}
+
+.storage-header{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:10px;margin-bottom:10px;
+}
+.storage-header h3{margin:0}
+.storage-count{
+ background:var(--deep-blue);color:#fff;padding:6px 10px;
+ border-radius:5px;font-size:12px;font-weight:bold;
+}
+.storage-table-wrap{width:100%;overflow-x:auto}
+.storage-table{width:100%;border-collapse:collapse;min-width:750px}
+.storage-table th{
+ background:var(--deep-blue);color:#fff;border:1px solid #0757b8;
+ padding:8px 5px;font-size:12px;text-align:center;
+}
+.storage-table td{
+ border:1px solid #bbb;padding:7px 5px;font-size:12px;
+ text-align:center;overflow-wrap:anywhere;
+}
+.storage-table tr:nth-child(even){background:#f4f8fc}
+.storage-actions{display:flex;justify-content:center;gap:4px}
+.storage-actions button{padding:5px 8px;font-size:11px}
+.no-records{text-align:center;padding:15px;color:#777;font-size:13px}
+
+/* A4 PRINT FORM */
+.print-area{
+ position:relative;
+ isolation:isolate;
+ width:210mm;height:297mm;
+ margin:0 auto;background:#fff;
+ border:2px solid var(--deep-blue);
+ padding:4mm;overflow:hidden;
+ display:flex;flex-direction:column;
+}
+.print-area:before{
+ content:"";
+ position:absolute;inset:0;
+ background:url("veza.jpg") center center/100mm auto no-repeat;
+ opacity:.045;pointer-events:none;z-index:-1;
+}
+
+.header{
+ height:32mm;flex:0 0 32mm;
+ display:grid;grid-template-columns:25% 55% 20%;
+ align-items:center;
+}
+.header-left,.header-right{text-align:center}
+.header-logo{
+ width:34mm;height:25mm;object-fit:contain;
+ display:block;margin:auto;
+}
+.moh-logo{
+ width:22mm;height:23mm;object-fit:contain;
+ display:block;margin:auto;
+}
+.header-centre{text-align:center}
+.republic{
+ font-family:"Times New Roman",serif;
+ font-size:15px;line-height:17px;font-weight:bold;
+}
+.main-title{
+ background:var(--deep-blue);color:#fff;width:98%;
+ margin:2mm auto;padding:2mm;border-radius:5px;
+ font-size:19px;font-weight:900;
+}
+.tagline{font-size:10px;font-style:italic;font-weight:bold}
+.tel{font-size:12px;font-weight:bold;margin-top:1mm}
+.opd-display{
+ font-weight:900;border-bottom:1px dotted #111;
+ display:inline-block;min-width:25mm;padding:1mm;
+}
+
+.patient-table{
+ width:100%;border-collapse:collapse;table-layout:fixed;flex:0 0 auto;
+}
+.patient-table th{
+ background:#dcecff;border:1.5px solid var(--deep-blue);
+ height:8mm;font-size:10px;text-align:center;font-weight:900;
+}
+.patient-table td{
+ border:1.5px solid var(--deep-blue);height:8mm;
+ font-size:11px;font-weight:bold;text-align:center;
+ padding:1mm;overflow-wrap:anywhere;
+}
+.second-details{margin-top:3mm}
+.sex-box{
+ width:6mm;height:6mm;border:1.5px solid #111;margin:auto;
+ display:flex;align-items:center;justify-content:center;
+ font-size:15px;font-weight:bold;
+}
+
+.attendance-title{
+ width:64%;margin:2.5mm auto 1.5mm;padding:1.8mm;
+ background:var(--deep-blue);color:#fff;border-radius:7mm;
+ text-align:center;font-size:16px;font-weight:900;flex:0 0 auto;
+}
+.attendance-subtitle{
+ text-align:center;font-size:9px;font-weight:bold;
+ margin-bottom:1.5mm;flex:0 0 auto;
+}
+
+.doctor-row{
+ display:grid;grid-template-columns:1fr 1fr 1fr;
+ border:1.5px solid var(--deep-blue);overflow:hidden;flex:0 0 8mm;
+}
+.doctor-cell{
+ min-height:8mm;border-right:1.5px solid var(--deep-blue);
+ padding:1.8mm;font-size:10px;font-weight:bold;
+}
+.doctor-cell:last-child{border-right:none}
+.doctor-row-2{
+ display:grid;grid-template-columns:1fr 1fr;
+ border:1.5px solid var(--deep-blue);margin-top:1.5mm;
+ overflow:hidden;flex:0 0 8mm;
+}
+.doctor-row-2 .doctor-cell{min-height:8mm}
+
+.visit-heading{
+ margin-top:2mm;text-align:center;background:var(--deep-blue);
+ color:#fff;font-size:12px;font-weight:bold;padding:1.4mm;
+ border-radius:4px;flex:0 0 auto;
+}
+.visit-table{
+ width:100%;border-collapse:collapse;table-layout:fixed;
+ margin-top:1.2mm;flex:1 1 auto;min-height:0;
+}
+.visit-table th{
+ background:#dcecff;border:1.5px solid var(--deep-blue);
+ height:8mm;font-size:10px;font-weight:900;text-align:center;
+}
+.visit-table th:nth-child(2),.visit-table td:nth-child(2){
+ border-left:3px solid var(--deep-blue);
+ border-right:3px solid var(--deep-blue);
+}
+.visit-table th:nth-child(3),.visit-table td:nth-child(3){
+ border-left:3px solid var(--deep-blue);
+ border-right:1.5px solid var(--deep-blue);
+}
+.visit-table tbody td{
+ border-top:none;border-bottom:none;
+ border-left:1.5px solid var(--deep-blue);
+ border-right:1.5px solid var(--deep-blue);
+ font-size:10px;padding:1mm;vertical-align:top;
+}
+.visit-table tbody tr{height:14mm}
+.visit-table tbody tr:last-child td{border-bottom:1.5px solid var(--deep-blue)}
+.visit-table .date-column{width:18%}
+.visit-table .details-column{width:45%}
+.visit-table .treatment-column{width:37%}
+
+.separator{border-top:1.5px dashed #111;margin:1.5mm 0;flex:0 0 auto}
+
+.lower-card{
+ border:1.5px solid var(--deep-blue);border-radius:5px;
+ padding:1.5mm;height:21mm;min-height:21mm;max-height:21mm;
+ overflow:hidden;flex:0 0 21mm;background:rgba(255,255,255,.96);
+}
+.lower-header{
+ display:grid;grid-template-columns:25% 55% 20%;
+ align-items:center;height:7mm;
+}
+.lower-left{text-align:center}
+.lower-logo{width:24mm;height:7mm;object-fit:contain}
+.lower-title{
+ background:var(--deep-blue);color:#fff;text-align:center;
+ border-radius:4px;padding:1.2mm;font-size:10px;font-weight:900;
+}
+.lower-opd{font-size:9px;font-weight:bold;text-align:center}
+.lower-opd-value{display:block;font-size:10px;margin-top:.5mm}
+.lower-line{
+ height:5mm;border:1px solid var(--deep-blue);border-radius:3px;
+ margin-top:.7mm;padding:.8mm 1.5mm;font-size:9px;
+ font-weight:bold;line-height:3mm;
+}
+.lower-value{
+ margin-left:3mm;display:inline-block;width:80%;
+ border-bottom:1px dotted #111;min-height:3mm;
+}
+
+@page{size:A4 portrait;margin:0}
+
+@media print{
+ html,body{
+  width:210mm;height:297mm;margin:0;padding:0;background:#fff;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+ }
+ .no-print{display:none!important}
+ .print-area{
+  display:flex;width:210mm;height:297mm;
+  margin:0;border:2px solid var(--deep-blue);
+  padding:4mm;overflow:hidden;
+ }
+ .visit-table{flex:1 1 auto;min-height:0}
+ .visit-table tbody td{border-top:none;border-bottom:none}
+ .visit-table tbody tr{height:14mm}
+ .visit-table tbody tr:last-child td{border-bottom:1.5px solid var(--deep-blue)}
+ .lower-card{flex:0 0 21mm;height:21mm;min-height:21mm;max-height:21mm}
+}
+
+@media screen and (max-width:850px){
+ body{padding:5px}
+ .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .print-area{transform-origin:top left;transform:scale(.75);margin-bottom:-70mm}
+}
+@media screen and (max-width:550px){
+ .form-grid{grid-template-columns:1fr}
+ .search-result{align-items:flex-start;flex-direction:column}
+ .print-area{transform:scale(.45);margin-bottom:-165mm}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<section class="registration-panel no-print">
+<h2>GM VEZA HOSPITAL — PATIENT DETAILS</h2>
+
+<div class="form-grid">
+ <div class="field"><label for="firstName">First Name *</label><input id="firstName" autocomplete="given-name" placeholder="First name"></div>
+ <div class="field"><label for="middleName">Middle Name</label><input id="middleName" placeholder="Middle name"></div>
+ <div class="field"><label for="lastName">Last Name *</label><input id="lastName" autocomplete="family-name" placeholder="Last name"></div>
+ <div class="field"><label for="age">Age *</label><input type="number" id="age" min="0" max="120" placeholder="Age"></div>
+ <div class="field"><label for="idNo">ID No. *</label><input id="idNo" placeholder="ID number"></div>
+ <div class="field"><label for="village">Village</label><input id="village" placeholder="Village"></div>
+ <div class="field"><label for="subLocation">Sub-location</label><input id="subLocation" placeholder="Sub-location"></div>
+ <div class="field"><label for="telephone">Telephone *</label><input type="tel" id="telephone" placeholder="07XXXXXXXX"></div>
+ <div class="field"><label for="sex">Sex *</label><select id="sex"><option value="">Select Sex</option><option value="M">Male</option><option value="F">Female</option></select></div>
+ <div class="field"><label for="opdNo">OPD Number *</label><input id="opdNo" placeholder="Enter OPD number"></div>
+</div>
+
+<div class="buttons">
+ <button class="save-btn" onclick="savePatient()">SAVE PATIENT</button>
+ <button class="print-btn" onclick="printForm()">PRINT FORM</button>
+ <button class="clear-btn" onclick="clearForm()">CLEAR</button>
+</div>
+<div id="message" role="status" style="margin-top:10px;font-weight:bold;color:#138a3d"></div>
+</section>
+
+<section class="search-panel no-print">
+<h3>SEARCH PATIENT</h3>
+<input type="search" id="search" class="search-box" placeholder="Search by patient name, ID number or OPD number..." oninput="searchPatients()">
+<div id="results"></div>
+</section>
+
+<section class="storage-panel no-print">
+<div class="storage-header">
+ <h3>SAVED PATIENTS</h3>
+ <span id="storageCount" class="storage-count">0 PATIENTS</span>
+</div>
+<div class="storage-table-wrap">
+<table class="storage-table">
+<thead><tr>
+ <th>NO.</th><th>PATIENT NAME</th><th>ID NO.</th><th>OPD NO.</th>
+ <th>TELEPHONE</th><th>SEX</th><th>DATE SAVED</th><th>ACTION</th>
+</tr></thead>
+<tbody id="storageTableBody"></tbody>
+</table>
+</div>
+</section>
+
+<main class="print-area" id="printArea">
+<div class="header">
+ <div class="header-left">
+  <img src="veza.jpg" class="header-logo" alt="GM Veza Hospital Logo">
+ </div>
+ <div class="header-centre">
+  <div class="republic">REPUBLIC OF KENYA<br>MINISTRY OF HEALTH</div>
+  <div class="main-title">GM VEZA HOSPITAL</div>
+  <div class="tagline">Your trusted health partner in recovery</div>
+  <div class="tel">TEL: 0715513893</div>
+ </div>
+ <div class="header-right">
+  <img src="moh.png" class="moh-logo" alt="Ministry of Health Logo">
+  <div style="font-size:11px;font-weight:bold">OPD NO.<br><span id="outOpdNo" class="opd-display"></span></div>
+ </div>
+</div>
+
+<table class="patient-table">
+<tr>
+ <th style="width:20%">FIRST NAME</th>
+ <th style="width:20%">MIDDLE NAME</th>
+ <th style="width:19%">LAST NAME</th>
+ <th style="width:9%">AGE</th>
+ <th style="width:32%">FULL NAME</th>
+</tr>
+<tr>
+ <td id="outFirstName"></td><td id="outMiddleName"></td>
+ <td id="outLastName"></td><td id="outAge"></td><td id="outFullName"></td>
+</tr>
+</table>
+
+<table class="patient-table second-details">
+<tr>
+ <th style="width:7%">M</th><th style="width:7%">F</th>
+ <th style="width:45%">SUB-LOCATION</th><th style="width:41%">TELEPHONE</th>
+</tr>
+<tr>
+ <td><div class="sex-box" id="maleBox"></div></td>
+ <td><div class="sex-box" id="femaleBox"></div></td>
+ <td id="outSubLocation"></td><td id="outTelephone"></td>
+</tr>
+</table>
+
+<div class="attendance-title">OUTPATIENT ATTENDANCE CARD</div>
+<div class="attendance-subtitle">FOR EACH VISIT DOCUMENT HISTORY, PHYSICAL EXAMINATION, INVESTIGATION AND TREATMENT</div>
+
+<div class="doctor-row">
+ <div class="doctor-cell">WEIGHT....................................</div>
+ <div class="doctor-cell">HEIGHT....................................</div>
+ <div class="doctor-cell">TEMP......................................</div>
+</div>
+<div class="doctor-row-2">
+ <div class="doctor-cell">B.P....................................................</div>
+ <div class="doctor-cell">BMI...................................................</div>
+</div>
+
+<div class="visit-heading">VISIT DETAILS / TREATMENT RECORD</div>
+
+<table class="visit-table">
+<thead><tr>
+ <th class="date-column">DATE</th>
+ <th class="details-column">DETAILS / NOTES</th>
+ <th class="treatment-column">TREATMENT</th>
+</tr></thead>
+<tbody>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+
+<div class="separator"></div>
+
+<div class="lower-card">
+ <div class="lower-header">
+  <div class="lower-left"><img src="veza.jpg" class="lower-logo" alt="GM Veza Hospital Logo"></div>
+  <div class="lower-title">OUTPATIENT ATTENDANCE CARD</div>
+  <div class="lower-opd">OPD NO.<span id="lowerOpdNo" class="lower-opd-value"></span></div>
+ </div>
+ <div class="lower-line">NAME <span class="lower-value" id="lowerName"></span></div>
+ <div class="lower-line">TELEPHONE <span class="lower-value" id="lowerTelephone"></span></div>
+</div>
+</main>
+</div>
+
+<script>
+const STORAGE_KEY="gm_veza_hospital_patient_records";
+
+function getPatients(){
+ try{
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+  return Array.isArray(data)?data:[];
+ }catch(error){return []}
+}
+
+function savePatients(patients){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(patients));
+ }catch(error){
+  alert("Unable to save records. Your browser storage may be full or unavailable.");
+  throw error;
+ }
+}
+
+function value(id){
+ return document.getElementById(id).value.trim();
+}
+
+function patientFromForm(){
+ return {
+  firstName:value("firstName"),
+  middleName:value("middleName"),
+  lastName:value("lastName"),
+  age:value("age"),
+  idNo:value("idNo"),
+  village:value("village"),
+  subLocation:value("subLocation"),
+  telephone:value("telephone"),
+  sex:value("sex"),
+  opdNo:value("opdNo")
+ };
+}
+
+function fullName(patient){
+ return [patient.firstName,patient.middleName,patient.lastName].filter(Boolean).join(" ");
+}
+
+function showMessage(message,isError=false){
+ const el=document.getElementById("message");
+ el.textContent=message;
+ el.style.color=isError?"#c62828":"#138a3d";
+}
+
+function savePatient(){
+ const patient=patientFromForm();
+
+ if(!patient.firstName||!patient.lastName||!patient.age||
+    !patient.idNo||!patient.telephone||!patient.sex||!patient.opdNo){
+  alert("Please fill in First Name, Last Name, Age, ID No., Telephone, Sex and OPD Number.");
+  return;
+ }
+
+ let patients=getPatients();
+ const existing=patients.find(p=>String(p.idNo||"").toLowerCase()===patient.idNo.toLowerCase());
+
+ if(existing&&!confirm("A patient with this ID number already exists.\n\nUpdate the existing record?"))return;
+
+ if(existing){
+  patient.id=existing.id;
+  patient.date=existing.date;
+  patients=patients.filter(p=>String(p.idNo||"").toLowerCase()!==patient.idNo.toLowerCase());
+ }else{
+  patient.id=Date.now();
+  patient.date=new Date().toLocaleDateString("en-GB");
+ }
+
+ patients.push(patient);
+
+ try{savePatients(patients)}catch(error){return}
+
+ displayPatient(patient);
+ showMessage("Patient saved successfully in this browser.");
+ searchPatients();
+}
+
+function displayPatient(patient){
+ const fields={
+  outFirstName:patient.firstName,
+  outMiddleName:patient.middleName,
+  outLastName:patient.lastName,
+  outAge:patient.age,
+  outFullName:fullName(patient),
+  outSubLocation:patient.subLocation,
+  outTelephone:patient.telephone,
+  outOpdNo:patient.opdNo,
+  lowerOpdNo:patient.opdNo,
+  lowerName:fullName(patient),
+  lowerTelephone:patient.telephone
+ };
+
+ Object.entries(fields).forEach(([id,val])=>{
+  document.getElementById(id).textContent=val||"";
+ });
+
+ document.getElementById("maleBox").textContent=patient.sex==="M"?"✓":"";
+ document.getElementById("femaleBox").textContent=patient.sex==="F"?"✓":"";
+}
+
+function searchPatients(){
+ const term=value("search").toLowerCase();
+ const patients=getPatients();
+ const matches=term?patients.filter(p=>{
+  const name=fullName(p).toLowerCase();
+  return name.includes(term)||
+   String(p.idNo||"").toLowerCase().includes(term)||
+   String(p.opdNo||"").toLowerCase().includes(term);
+ }):patients;
+
+ renderSearchResults(term,matches);
+ displayStoragePatients(matches);
+}
+
+function renderSearchResults(term,patients){
+ const results=document.getElementById("results");
+ results.replaceChildren();
+
+ if(!term)return;
+
+ if(!patients.length){
+  const p=document.createElement("p");
+  p.textContent="No patient found.";
+  results.appendChild(p);
+  return;
+ }
+
+ patients.forEach(patient=>{
+  const row=document.createElement("div");
+  row.className="search-result";
+
+  const details=document.createElement("div");
+  details.innerHTML="<strong class='result-name'></strong><br>ID No: <span></span> | OPD No: <span></span> | Telephone: <span></span>";
+  details.querySelector("strong").textContent=fullName(patient);
+  const spans=details.querySelectorAll("span");
+  spans[0].textContent=patient.idNo||"";
+  spans[1].textContent=patient.opdNo||"";
+  spans[2].textContent=patient.telephone||"";
+
+  const actions=document.createElement("div");
+  actions.className="result-buttons";
+
+  const load=document.createElement("button");
+  load.className="load-btn";
+  load.textContent="LOAD";
+  load.onclick=()=>loadPatient(patient.id);
+
+  const del=document.createElement("button");
+  del.className="delete-btn";
+  del.textContent="DELETE";
+  del.onclick=()=>deletePatient(patient.id);
+
+  actions.append(load,del);
+  row.append(details,actions);
+  results.appendChild(row);
+ });
+}
+
+function displayStoragePatients(filteredPatients){
+ const tbody=document.getElementById("storageTableBody");
+ tbody.replaceChildren();
+
+ const patients=filteredPatients===undefined?getPatients():filteredPatients;
+ document.getElementById("storageCount").textContent=
+  patients.length+(patients.length===1?" PATIENT":" PATIENTS");
+
+ if(!patients.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=8;
+  td.className="no-records";
+  td.textContent="No patients currently saved in this browser.";
+  tr.appendChild(td);
+  tbody.appendChild(tr);
+  return;
+ }
+
+ patients.forEach((patient,index)=>{
+  const tr=document.createElement("tr");
+  const sex=patient.sex==="M"?"Male":patient.sex==="F"?"Female":"";
+  const values=[
+   index+1,fullName(patient),patient.idNo,patient.opdNo,
+   patient.telephone,sex,patient.date
+  ];
+
+  values.forEach((value,index)=>{
+   const td=document.createElement("td");
+   td.textContent=value||"";
+   if(index===1||index===3)td.style.fontWeight="bold";
+   tr.appendChild(td);
+  });
+
+  const actionCell=document.createElement("td");
+  const actions=document.createElement("div");
+  actions.className="storage-actions";
+
+  const load=document.createElement("button");
+  load.className="load-btn";
+  load.textContent="LOAD";
+  load.onclick=()=>loadPatient(patient.id);
+
+  const del=document.createElement("button");
+  del.className="delete-btn";
+  del.textContent="DELETE";
+  del.onclick=()=>deletePatient(patient.id);
+
+  actions.append(load,del);
+  actionCell.appendChild(actions);
+  tr.appendChild(actionCell);
+  tbody.appendChild(tr);
+ });
+}
+
+function loadPatient(id){
+ const patient=getPatients().find(p=>p.id===id);
+ if(!patient){alert("Patient not found.");return}
+
+ ["firstName","middleName","lastName","age","idNo","village",
+  "subLocation","telephone","sex","opdNo"].forEach(key=>{
+  document.getElementById(key).value=patient[key]||"";
+ });
+
+ displayPatient(patient);
+ showMessage("Patient loaded successfully.");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deletePatient(id){
+ const patients=getPatients();
+ const patient=patients.find(p=>p.id===id);
+ if(!patient)return;
+
+ if(!confirm("Delete patient:\n\n"+fullName(patient)+
+  "\n\nID No: "+patient.idNo+"\nOPD No: "+patient.opdNo+"?"))return;
+
+ try{savePatients(patients.filter(p=>p.id!==id))}
+ catch(error){return}
+
+ searchPatients();
+ showMessage("Patient deleted from this browser.");
+}
+
+function clearForm(){
+ ["firstName","middleName","lastName","age","idNo","village",
+  "subLocation","telephone","sex","opdNo"].forEach(id=>{
+  document.getElementById(id).value="";
+ });
+
+ showMessage("");
+ displayPatient({});
+}
+
+function printForm(){
+ const patient=patientFromForm();
+
+ if(!patient.firstName||!patient.lastName||!patient.opdNo){
+  alert("Please enter or load the patient's First Name, Last Name and OPD Number before printing.");
+  return;
+ }
+
+ displayPatient(patient);
+ window.print();
+}
+
+displayPatient({});
+displayStoragePatients();
+</script>
+</body>
+</html>

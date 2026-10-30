@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GM Veza Hospital - In-Patient Discharge Summary</title>
+
+<style>
+:root {
+  --blue: #0879c9;
+  --navy: #123b5b;
+  --line: #64717b;
+  --ink: #17212b;
+}
+
+* { box-sizing: border-box; }
+
+@page {
+  size: A4 portrait;
+  margin: 4mm;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.toolbar {
+  padding: 10px;
+  text-align: center;
+}
+
+.toolbar button {
+  margin: 4px;
+  border: 0;
+  border-radius: 4px;
+  padding: 10px 18px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toolbar button:hover { background: #075da8; }
+.toolbar button:disabled { opacity: .6; cursor: wait; }
+
+.sheet {
+  position: relative;
+  isolation: isolate;
+  width: 202mm;
+  height: 289mm;
+  margin: 0 auto;
+  padding: 4mm;
+  overflow: hidden;
+  background: #fff;
+}
+
+.watermark {
+  position: absolute;
+  z-index: -1;
+  width: 112mm;
+  height: 112mm;
+  object-fit: contain;
+  left: 50%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  opacity: .09;
+  pointer-events: none;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 25mm 1fr 25mm;
+  align-items: center;
+  gap: 3mm;
+  padding-bottom: 2mm;
+  margin-bottom: 2mm;
+  border-bottom: 2px solid var(--blue);
+  text-align: center;
+}
+
+.header-logo {
+  width: 24mm;
+  height: 24mm;
+  object-fit: contain;
+}
+
+.header-text { min-width: 0; }
+
+.header h1 {
+  margin: 0 0 1mm;
+  color: var(--navy);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.header p {
+  margin: 1mm 0;
+  font-size: 8px;
+}
+
+.ministry {
+  color: #111;
+  font-size: 9px !important;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.motto {
+  color: var(--blue);
+  font-weight: bold;
+  font-style: italic;
+}
+
+.form-title {
+  margin: 0 0 2mm;
+  padding: 1.5mm;
+  text-align: center;
+  color: var(--navy);
+  background: #eaf5fc;
+  border: 1px solid var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.section-title {
+  margin: 1.6mm 0 1mm;
+  padding: 1mm 1.5mm;
+  border-left: 3px solid var(--blue);
+  background: #eef6fb;
+  color: var(--navy);
+  font-size: 8.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.patient-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 4mm;
+  row-gap: 1.5mm;
+}
+
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5mm;
+  min-width: 0;
+}
+
+.field label {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.write-line {
+  flex: 1;
+  min-width: 8mm;
+  height: 3.5mm;
+  border-bottom: 1px solid var(--line);
+}
+
+.full { grid-column: 1 / -1; }
+
+.diagnosis-line {
+  height: 4mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+.ruled-line {
+  height: 4.3mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+.medication-line {
+  height: 4mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+.care-line {
+  height: 4.7mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+.signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm 7mm;
+  margin-top: 2mm;
+  padding-top: 1mm;
+}
+
+.signature-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1mm;
+  min-height: 12mm;
+}
+
+.signature-line {
+  height: 4mm;
+  border-bottom: 1px solid var(--line);
+}
+
+.signature-label {
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.stamp-box {
+  height: 12mm;
+  border: 1px dashed #75818b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #687681;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+@media screen {
+  body { background: #e9edf1; }
+
+  .sheet {
+    background: #fff;
+    box-shadow: 0 2px 12px #0002;
+  }
+}
+
+@media print {
+  html, body {
+    width: 100%;
+    height: 289mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+
+  .toolbar { display: none !important; }
+
+  .sheet {
+    width: 202mm;
+    height: 289mm;
+    margin: 0;
+    padding: 4mm;
+    overflow: hidden;
+    box-shadow: none;
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="toolbar">
+  <button type="button" onclick="window.print()">Print Form</button>
+  <button type="button" id="downloadPdfButton" onclick="downloadForm()">
+    Download PDF to PC
+  </button>
+</div>
+
+<main class="sheet" id="dischargeSheet">
+
+  <img class="watermark" src="veza.jpg" alt="" aria-hidden="true">
+
+  <header class="header">
+    <img
+      class="header-logo"
+      src="moh.png"
+      alt="Ministry of Health Logo"
+      onerror="this.style.visibility='hidden'"
+    >
+
+    <div class="header-text">
+      <p class="ministry">REPUBLIC OF KENYA</p>
+      <p class="ministry">MINISTRY OF HEALTH</p>
+      <h1>GM VEZA HOSPITAL</h1>
+      <p>Tel: 0715513893</p>
+      <p>Email: gmvezahospital@gmail.com</p>
+      <p class="motto">Your trusted health partner in recovery</p>
+    </div>
+
+    <img
+      class="header-logo"
+      src="veza.png"
+      alt="GM Veza Hospital Logo"
+      onerror="this.style.visibility='hidden'"
+    >
+  </header>
+
+  <h2 class="form-title">IN-PATIENT DISCHARGE SUMMARY</h2>
+
+  <section>
+    <div class="section-title">Patient and Admission Details</div>
+
+    <div class="patient-grid">
+      <div class="field">
+        <label>Patient Name:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>IP No.:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Age:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Sex:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Weight:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Ward:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Date Admitted:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Date Discharged:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Department:</label><span class="write-line"></span>
+      </div>
+      <div class="field">
+        <label>Ward Doctor:</label><span class="write-line"></span>
+      </div>
+      <div class="field full">
+        <label>Consultant:</label><span class="write-line"></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">Diagnosis and Procedures</div>
+
+    <div class="field">
+      <label>Provisional Diagnosis:</label><span class="write-line"></span>
+    </div>
+    <div class="diagnosis-line"></div>
+
+    <div class="field">
+      <label>Discharge Diagnosis:</label><span class="write-line"></span>
+    </div>
+    <div class="diagnosis-line"></div>
+
+    <div class="field">
+      <label>Other Problems / Co-morbidities:</label><span class="write-line"></span>
+    </div>
+
+    <div class="field">
+      <label>Operations / Procedures:</label><span class="write-line"></span>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">Presenting Complaints and History</div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+  </section>
+
+  <section>
+    <div class="section-title">Clinical and Management Summary</div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+  </section>
+
+  <section>
+    <div class="section-title">Laboratory Investigations and Results</div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+  </section>
+
+  <section>
+    <div class="section-title">Radiology Investigations and Results</div>
+    <div class="ruled-line"></div>
+    <div class="ruled-line"></div>
+  </section>
+
+  <section>
+    <div class="section-title">Discharge Medication</div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+    <div class="medication-line"></div>
+  </section>
+
+  <section>
+    <div class="section-title">Discharge Care Plan and Follow-up</div>
+    <div class="care-line"></div>
+    <div class="care-line"></div>
+    <div class="care-line"></div>
+    <div class="care-line"></div>
+  </section>
+
+  <section class="signature-grid">
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-label">Name of Discharging Clinician</div>
+    </div>
+
+    <div class="signature-box">
+      <div class="stamp-box">Official Stamp</div>
+    </div>
+
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-label">Signature of Discharging Clinician</div>
+      <div class="signature-line"></div>
+      <div class="signature-label">Date</div>
+    </div>
+
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-label">Patient / Next-of-Kin Signature</div>
+      <div class="signature-line"></div>
+      <div class="signature-label">Date</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function loadPdfLibrary(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+
+    script.onload = () => {
+      if (typeof html2pdf === "function") resolve();
+      else reject(new Error("PDF library unavailable"));
+    };
+
+    script.onerror = () => reject(new Error("Could not load PDF library"));
+    document.head.appendChild(script);
+  });
+}
+
+async function ensurePdfLibrary() {
+  if (typeof html2pdf === "function") return;
+
+  try {
+    await loadPdfLibrary(
+      "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    );
+  } catch (error) {
+    await loadPdfLibrary(
+      "https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"
+    );
+  }
+}
+
+async function downloadForm() {
+  const sheet = document.getElementById("dischargeSheet");
+  const button = document.getElementById("downloadPdfButton");
+  const originalLabel = button.textContent;
+
+  button.disabled = true;
+  button.textContent = "Preparing PDF...";
+
+  try {
+    await ensurePdfLibrary();
+
+    const images = Array.from(sheet.querySelectorAll("img"));
+
+    await Promise.all(images.map(img => {
+      if (img.complete) return Promise.resolve();
+
+      return new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }));
+
+    await html2pdf().set({
+      margin: 0,
+      filename: "GM_Veza_Hospital_Discharge_Summary.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
+      },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    }).from(sheet).save();
+
+  } catch (error) {
+    console.error(error);
+    alert(
+      "PDF download failed. Check your internet connection or use Print Form, " +
+      "then choose Save as PDF in the print dialog."
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
+</script>
+
+</body>
+</html>

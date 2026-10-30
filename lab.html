@@ -1,0 +1,615 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GM Veza Hospital - Laboratory Request Forms</title>
+
+<style>
+@page {
+  size: A4 landscape;
+  margin: 5mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --green: #004b87;
+  --teal: #0066b3;
+  --line: #9bb8cf;
+  --ink: #17364f;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+}
+
+body {
+  background: #edf0ed;
+}
+
+.toolbar {
+  text-align: center;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  background: #075da8;
+  color: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 11px 25px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  background: #064779;
+}
+
+/* A4 LANDSCAPE PAGE */
+.sheet {
+  width: 287mm;
+  height: 200mm;
+  margin: 0 auto 15px;
+  padding: 0;
+  background: white;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 200mm;
+  column-gap: 3mm;
+  overflow: hidden;
+}
+
+/* BOTH FORMS HAVE IDENTICAL DIMENSIONS */
+.lab-form {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 200mm;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line);
+  padding: 3mm;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;
+}
+
+/* CONTENT ABOVE WATERMARKS */
+.lab-form > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* MAIN WATERMARK */
+.lab-form::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 69mm;
+  height: 69mm;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%);
+  background-image: url("veza.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.075;
+  pointer-events: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* SIDE WATERMARKS */
+.side-watermark {
+  position: absolute !important;
+  z-index: 0 !important;
+  top: 49%;
+  width: 16mm;
+  height: 25mm;
+  object-fit: contain;
+  opacity: 0.10;
+  pointer-events: none;
+}
+
+.side-watermark.left {
+  left: 1mm;
+}
+
+.side-watermark.right {
+  right: 1mm;
+}
+
+/* HEADER */
+.header {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 21mm minmax(0, 1fr);
+  align-items: center;
+  gap: 2mm;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2mm;
+}
+
+.logo {
+  display: block;
+  width: 20mm;
+  height: 19mm;
+  object-fit: contain;
+}
+
+.brand {
+  text-align: center;
+  min-width: 0;
+}
+
+.brand h1 {
+  font-size: 15pt;
+  color: var(--teal);
+  margin: 0 0 1.5mm;
+  letter-spacing: 0.4px;
+}
+
+.contact {
+  font-size: 7pt;
+  line-height: 1.45;
+  font-weight: bold;
+  color: var(--teal);
+}
+
+/* FORM TITLE */
+.form-title {
+  flex: 0 0 auto;
+  text-align: center;
+  color: var(--green);
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 2mm 0 1mm;
+}
+
+.warning {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 6.5pt;
+  font-weight: bold;
+  margin-bottom: 2mm;
+}
+
+.section-title {
+  color: var(--teal);
+  font-weight: bold;
+  font-size: 7.5pt;
+  margin-bottom: 2mm;
+}
+
+/* EQUAL PATIENT AND SPECIMEN COLUMN PROPORTIONS */
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+  column-gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* PATIENT DETAILS */
+.patient {
+  min-width: 0;
+  min-height: 0;
+  padding-right: 3mm;
+  border-right: 1px solid var(--line);
+}
+
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: 1mm;
+  font-size: 7pt;
+  margin-bottom: 3mm;
+  min-height: 5mm;
+  width: 100%;
+}
+
+.field label {
+  flex: 0 0 auto;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.line {
+  display: inline-block;
+  border-bottom: 1px dotted var(--line);
+  height: 4mm;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.long-field {
+  font-size: 7pt;
+  margin: 1mm 0 3mm;
+  font-weight: bold;
+}
+
+.long-field .line {
+  display: block;
+  width: 100%;
+  margin-top: 1mm;
+}
+
+/* SPECIMEN DESCRIPTION */
+.investigations {
+  min-width: 0;
+  min-height: 0;
+  padding-left: 2.5mm;
+  display: flex;
+  flex-direction: column;
+}
+
+.specimen-title {
+  flex: 0 0 auto;
+  font-size: 7pt;
+  font-weight: bold;
+  margin-bottom: 2mm;
+}
+
+/* SIX EQUAL-SIZED BOXES */
+.categories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, 18mm);
+  flex: 0 0 auto;
+  width: 100%;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.category {
+  min-width: 0;
+  min-height: 0;
+  height: 18mm;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 2mm 1mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.category h3 {
+  font-size: 6.7pt;
+  line-height: 1.2;
+  color: var(--green);
+  margin: 0;
+  min-height: 8mm;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox {
+  font-size: 11pt;
+  line-height: 1;
+}
+
+/* OTHER SPECIMEN */
+.other {
+  border: 1px solid var(--line);
+  border-top: 0;
+  padding: 2mm;
+  font-size: 7pt;
+  flex: 1 1 auto;
+  min-height: 15mm;
+  display: flex;
+  flex-direction: column;
+}
+
+.other strong {
+  display: block;
+  flex: 0 0 auto;
+  margin-bottom: 2mm;
+}
+
+.other .line {
+  display: block;
+  flex: 0 0 4mm;
+  width: 100%;
+  margin-bottom: 3mm;
+}
+
+/* INVESTIGATION REQUEST */
+.investigation-request {
+  flex: 0 0 22mm;
+  min-height: 22mm;
+  border-top: 1px solid var(--line);
+  padding-top: 2mm;
+  margin-top: 2mm;
+}
+
+.investigation-request h3 {
+  color: var(--teal);
+  font-size: 7.5pt;
+  margin: 0 0 1mm;
+}
+
+.request-line {
+  height: 6mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+/* SIGNATURES */
+.footer {
+  flex: 0 0 16mm;
+  min-height: 16mm;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2mm;
+  padding-top: 2mm;
+  font-size: 6.5pt;
+  line-height: 2;
+}
+
+.sign-line {
+  display: inline-block;
+  width: 19mm;
+  max-width: 55%;
+  height: 3mm;
+  border-bottom: 1px dotted var(--line);
+}
+
+/* PRINT ONLY THE TWO FORMS */
+@media print {
+  html, body {
+    width: 287mm !important;
+    height: 200mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .toolbar {
+    display: none !important;
+  }
+
+  .sheet {
+    width: 287mm !important;
+    height: 200mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: 200mm !important;
+    column-gap: 3mm !important;
+    row-gap: 0 !important;
+    overflow: hidden !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .lab-form {
+    width: 100% !important;
+    height: 200mm !important;
+    min-height: 0 !important;
+    max-height: 200mm !important;
+    margin: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="toolbar">
+  <button type="button" onclick="downloadPDF()">
+    DOWNLOAD PDF
+  </button>
+
+  <button type="button" onclick="window.print()">
+    PRINT FORM
+  </button>
+</div>
+
+<main class="sheet" id="sheet"></main>
+
+<script>
+function makeForm() {
+  return `
+  <section class="lab-form">
+
+    <img class="side-watermark left"
+         src="veza.jpg" alt="" aria-hidden="true">
+
+    <img class="side-watermark right"
+         src="veza.png" alt="" aria-hidden="true">
+
+    <header class="header">
+      <img class="logo"
+           src="veza.png"
+           alt="GM Veza Hospital Logo">
+
+      <div class="brand">
+        <h1>GM VEZA HOSPITAL</h1>
+        <div class="contact">
+          
+          Tel: 0715513893<br>
+          Email: gmvezahospital@gmail.com<br>
+          Your trusted health partner in recovery
+        </div>
+      </div>
+    </header>
+
+    <div class="form-title">
+      LABORATORY REQUEST &amp; REPORT FORM
+    </div>
+
+    <div class="warning">
+      Incompletely filled forms will not be processed
+    </div>
+
+    <div class="content">
+
+      <!-- PATIENT DETAILS -->
+      <div class="patient">
+        <div class="section-title">1. Patient Details</div>
+
+        <div class="field">
+          <label>NAME:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Age (yrs/months):</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Sex: M / F</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Residence/Village:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>IP/OP No.:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="long-field">
+          Report to specify clinic/ward/clinician:
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Specimen:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Collection Date:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Time:</label>
+          <span class="line"></span>
+        </div>
+
+        <div class="field">
+          <label>Lab No.:</label>
+          <span class="line"></span>
+        </div>
+      </div>
+
+      <!-- SPECIMEN CATEGORIES -->
+      <div class="investigations">
+        <div class="specimen-title">
+          Specimen Description<br>
+          Tick appropriate box
+        </div>
+
+        <div class="categories">
+          <div class="category">
+            <h3>Histology/Cytology</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+
+          <div class="category">
+            <h3>Bacteriology</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+
+          <div class="category">
+            <h3>Serology</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+
+          <div class="category">
+            <h3>Parasitology</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+
+          <div class="category">
+            <h3>Haematology</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+
+          <div class="category">
+            <h3>Biochemistry</h3>
+            <div class="checkbox">&#9744;</div>
+          </div>
+        </div>
+
+        <div class="other">
+          <strong>Other (specify):</strong>
+          <span class="line"></span>
+          <span class="line"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INVESTIGATION REQUEST -->
+    <div class="investigation-request">
+      <h3>Investigation Requested</h3>
+      <div class="request-line"></div>
+      <div class="request-line"></div>
+    </div>
+
+    <!-- LABORATORY SIGNATURES -->
+    <footer class="footer">
+      <div>
+        Test Done By (Initial/Sign):
+        <span class="sign-line"></span><br>
+
+        Approved By (Initial/Sign):
+        <span class="sign-line"></span>
+      </div>
+
+      <div>
+        Date:
+        <span class="sign-line"></span><br>
+
+        Date:
+        <span class="sign-line"></span>
+      </div>
+    </footer>
+
+  </section>`;
+}
+
+/* CREATE EXACTLY TWO FORMS */
+document.getElementById("sheet").innerHTML =
+  makeForm() + makeForm();
+
+/* OPEN PDF SAVE DIALOG */
+function downloadPDF() {
+  window.print();
+}
+</script>
+
+</body>
+</html>

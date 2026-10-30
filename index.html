@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#0756a4">
+
+<title>GM Veza Hospital | Quality Healthcare</title>
+
+<style>
+
+:root{--blue:#0756a4;--navy:#06376c;--cyan:#16a8e8;--green:#12834a;--ink:#203247;--glass:rgba(255,255,255,.88);--line:#d7e7f6}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);line-height:1.65;min-height:100vh;background:#eaf4fc;position:relative;isolation:isolate}
+
+body:before{content:"";position:fixed;inset:0;z-index:-2;background:url("gm.jpg") center/cover no-repeat}
+
+body:after{content:"";position:fixed;inset:0;z-index:-1;background:rgba(235,246,255,.48);pointer-events:none}
+
+a{color:var(--blue)}
+
+header{background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border-bottom:4px solid var(--green);box-shadow:0 5px 22px #082e501a}
+
+.brand{max-width:1400px;margin:auto;padding:18px 4%;display:flex;align-items:center;justify-content:center;gap:24px}
+
+.logo{width:112px;height:112px;object-fit:contain;flex-shrink:0}
+
+.brand-text{text-align:center;flex:1;min-width:0}
+
+.brand h1{font-size:clamp(24px,3.5vw,42px);line-height:1.15;color:var(--blue);font-weight:900;letter-spacing:.5px}
+
+.tagline{font-weight:800;color:var(--green);font-size:clamp(13px,1.5vw,18px);margin-top:6px}
+
+.contact-line{font-size:14px;margin-top:5px;overflow-wrap:anywhere}
+
+.motto{font-size:12px;color:var(--navy);font-weight:700;margin-top:3px}
+
+nav{position:sticky;top:0;z-index:20;background:rgba(5,75,145,.97);box-shadow:0 4px 14px #092d4b22}
+
+.nav-inner{max-width:1400px;margin:auto;display:flex;justify-content:center;flex-wrap:wrap}
+
+nav a{color:#fff;text-decoration:none;padding:12px 14px;font-size:13px;font-weight:800;transition:.2s}
+
+nav a:hover,nav a:focus{background:var(--green)}
+
+.container{width:min(1360px,94%);margin:28px auto 40px}
+
+.hero{position:relative;overflow:hidden;min-height:390px;display:grid;place-items:center;text-align:center;padding:50px 24px;border-radius:24px;color:#fff;background:linear-gradient(115deg,rgba(3,37,83,.76),rgba(4,91,147,.52)),url("gm.jpg") center/cover no-repeat;box-shadow:0 18px 45px #052d542b;border:1px solid #ffffff88}
+
+.hero:before,.hero:after{content:"✚";position:absolute;color:#ffffff24;font-size:150px;line-height:1}
+
+.hero:before{left:4%;top:2%}.hero:after{right:5%;bottom:0}
+
+.hero-content{position:relative;z-index:1;max-width:850px}
+
+.eyebrow{display:inline-block;background:#ffffff20;border:1px solid #ffffff80;border-radius:999px;padding:5px 14px;font-weight:800;font-size:13px;letter-spacing:1px;margin-bottom:15px}
+
+.hero h2{font-size:clamp(30px,5vw,54px);line-height:1.12;margin-bottom:15px;text-shadow:0 3px 12px #001a3c66}
+
+.hero p{font-size:clamp(15px,2vw,19px);margin:0 auto 24px;max-width:760px}
+
+.hero-buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid transparent;border-radius:10px;padding:11px 18px;text-decoration:none;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #001d3d2b}
+
+.btn-green{background:var(--green);color:white}.btn-white{background:white;color:var(--blue)}.btn-outline{border-color:#fff;color:#fff;background:#ffffff12}.btn-blue{background:var(--blue);color:white}
+
+.trust-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+
+.trust-item{padding:17px 12px;border-radius:15px;text-align:center;background:rgba(255,255,255,.88);border:1px solid #d7e8f7;box-shadow:0 5px 16px #13395b0d}
+
+.trust-item .big{font-size:28px;display:block}.trust-item strong{display:block;color:var(--navy);font-size:14px}
+
+section{scroll-margin-top:90px}
+
+.section-title{font-size:clamp(23px,3vw,31px);color:var(--navy);text-align:center;margin:42px 0 8px}
+
+.section-title:after{content:"";display:block;width:74px;height:4px;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:5px;margin:10px auto 0}
+
+.section-intro{text-align:center;max-width:820px;margin:0 auto 22px}
+
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+
+.card{min-width:0;background:var(--glass);backdrop-filter:blur(8px);border:1px solid #ffffffd9;border-radius:17px;padding:23px;box-shadow:0 8px 24px #163c5b14;transition:transform .2s,box-shadow .2s}
+
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 30px #163c5b20}
+
+.card h3{color:var(--blue);font-size:19px;margin:5px 0 9px}
+
+.card p{margin-bottom:12px}
+
+.card-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(140deg,#e1f4ff,#e4f8ec);font-size:29px}
+
+.card a:not(.btn){font-weight:800}
+
+.about-panel{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch}
+
+.about-copy,.about-visual{background:var(--glass);border:1px solid #ffffffd9;border-radius:18px;padding:28px;box-shadow:0 8px 24px #163c5b14}
+
+.about-copy h3{color:var(--blue);font-size:22px;margin-bottom:10px}
+
+.feature-list{list-style:none;display:grid;gap:10px;margin-top:16px}
+
+.feature-list li{display:flex;gap:10px;align-items:flex-start}
+
+.check{color:var(--green);font-weight:900}
+
+.about-visual{background:linear-gradient(145deg,rgba(5,72,145,.92),rgba(13,159,201,.82)),url("gm.jpg") center/cover;color:white;display:flex;flex-direction:column;justify-content:center;min-height:280px}
+
+.about-visual .cross{font-size:64px;line-height:1}
+
+.about-visual h3{font-size:25px;margin:10px 0}
+
+.about-visual p{max-width:460px}
+
+.service-card{border-top:4px solid var(--cyan)}
+
+.resource-card{border-top:4px solid var(--green)}
+
+.document-list{list-style:none}
+
+.document-list li+li{border-top:1px solid #dce8f3}
+
+.document-list a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;text-decoration:none;color:var(--blue);font-weight:800}
+
+.document-list a:hover{color:var(--green)}
+
+.download-label{font-size:12px;white-space:nowrap;background:#e4f7ec;color:#116d3e;border-radius:7px;padding:4px 8px}
+
+.doctor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+
+.team-card{text-align:center}
+
+.avatar{width:88px;height:88px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:39px;background:linear-gradient(145deg,#dff4ff,#e2f7e9);border:4px solid white;box-shadow:0 4px 12px #00345c20}
+
+.team-card small{display:block;color:#527087;font-weight:700}
+
+.location-panel{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+.location-box{background:var(--glass);border:1px solid #ffffffd9;border-radius:17px;padding:23px;box-shadow:0 8px 24px #163c5b14}
+
+.location-box h3{color:var(--blue);margin-bottom:10px}
+
+.contact-list{list-style:none;display:grid;gap:12px}
+
+.contact-list li{display:flex;gap:10px;overflow-wrap:anywhere}
+
+.quick-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+
+.quick-link{display:block;text-align:center;padding:17px 12px;border-radius:13px;background:rgba(255,255,255,.92);border:1px solid #d7e8f7;text-decoration:none;color:var(--blue);font-weight:800;box-shadow:0 4px 14px #163c5b0d}
+
+.quick-link:hover{background:var(--blue);color:white}
+.constitution-link{border:2px solid var(--green);background:linear-gradient(135deg,#ffffff,#eaf8ef);box-shadow:0 6px 18px #12834a20}
+.constitution-link:hover{background:var(--green);color:white}
+.constitution-link .download-label{margin-left:6px}
+
+.help-panel{background:rgba(231,244,255,.93);border-left:6px solid var(--blue);border-radius:12px;padding:22px;margin-top:28px}
+
+.help-panel h3{color:var(--navy);margin-bottom:8px}
+
+footer{background:linear-gradient(110deg,#052e61,#0756a4);color:white;text-align:center;padding:28px 16px;margin-top:42px;border-top:5px solid var(--cyan)}
+
+footer a{color:#c9f5df;text-decoration:none}
+
+.footer-links{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.doctor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}.about-panel{grid-template-columns:1fr}.logo{width:85px;height:85px}.trust-strip{grid-template-columns:repeat(2,1fr)}}
+
+@media(max-width:600px){.brand{padding:13px 3%;gap:9px}.logo{width:53px;height:53px}.brand h1{font-size:18px}.tagline{font-size:11px;line-height:1.3}.contact-line{font-size:10px}.motto{font-size:9px}.nav-inner{justify-content:flex-start}nav a{padding:10px;font-size:12px}.container{width:92%;margin:18px auto 30px}.hero{min-height:330px;padding:34px 17px;border-radius:17px}.hero p{font-size:15px}.cards,.doctor-grid,.location-panel{grid-template-columns:1fr}.quick-links{grid-template-columns:repeat(2,minmax(0,1fr))}.card,.about-copy,.about-visual,.location-box{padding:19px}.section-title{margin-top:31px}.trust-strip{gap:9px}.trust-item{padding:13px 7px}.trust-item strong{font-size:12px}}
+
+/* VISIBILITY & FINISHING STYLES */
+body:before{
+  background-image:url("gm.jpg");
+  background-position:center center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  opacity:1;
+}
+body:after{
+  background:rgba(229,242,253,.24);
+}
+header{
+  background:rgba(255,255,255,.97);
+}
+.logo{
+  filter:drop-shadow(0 5px 9px rgba(5,55,108,.18));
+}
+.brand h1{
+  text-shadow:0 2px 0 rgba(255,255,255,.8);
+}
+nav{
+  background:rgba(4,48,96,.98);
+}
+nav a{
+  border-bottom:3px solid transparent;
+}
+nav a:hover,nav a:focus{
+  background:var(--green);
+  border-bottom-color:#baf3d0;
+}
+.hero{
+  background-image:linear-gradient(115deg,rgba(3,31,70,.62),rgba(4,91,147,.28)),url("gm.jpg");
+  background-position:center;
+  background-size:cover;
+  border:2px solid rgba(255,255,255,.8);
+}
+.hero h2{
+  text-shadow:0 3px 12px rgba(0,0,0,.65);
+}
+.trust-item,.card,.about-copy,.location-box,.quick-link{
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(255,255,255,.98);
+  box-shadow:0 9px 26px rgba(5,44,78,.15);
+}
+.card h3,.about-copy h3,.location-box h3{
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+.card-icon,.avatar{
+  box-shadow:0 5px 14px rgba(5,55,108,.12);
+}
+.btn{
+  box-shadow:0 5px 14px rgba(3,37,83,.14);
+}
+.btn:focus-visible,.quick-link:focus-visible,nav a:focus-visible,a:focus-visible{
+  outline:3px solid #ffcc4d;
+  outline-offset:3px;
+}
+.document-list a{
+  border-radius:8px;
+  padding-left:8px;
+  padding-right:8px;
+}
+.document-list a:hover{
+  background:#eef8ff;
+}
+.quick-link{
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  flex-wrap:wrap;
+  transition:transform .2s,background .2s,color .2s,box-shadow .2s;
+}
+.quick-link:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 24px rgba(5,55,108,.22);
+}
+.constitution-link{
+  border:2px solid var(--green);
+  background:linear-gradient(135deg,#ffffff,#e4f8ec);
+  color:#075d35;
+}
+.constitution-link .download-label{
+  background:#12834a;
+  color:#fff;
+}
+.section-title{
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+}
+.help-panel{
+  box-shadow:0 8px 24px rgba(5,55,108,.12);
+}
+footer{
+  box-shadow:0 -8px 25px rgba(5,35,70,.12);
+}
+@media(max-width:600px){
+  body:after{background:rgba(235,246,255,.30)}
+  .hero{background-image:linear-gradient(115deg,rgba(3,31,70,.72),rgba(4,91,147,.42)),url("gm.jpg")}
+  .quick-link{min-height:68px;padding:13px 8px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{transition:none!important;animation:none!important}
+}
+
+
+/* FINAL POLISH */
+::selection{background:#bdebd0;color:#06376c}
+a{transition:color .2s,background .2s,transform .2s}
+section[id]{scroll-margin-top:84px}
+.hero-buttons .btn{min-height:46px}
+.resource-card .document-list a{min-height:44px}
+.contact-list a{font-weight:700}
+@media(min-width:1100px){
+  .container{width:min(1360px,92%)}
+  .hero{min-height:430px}
+  .cards{gap:22px}
+  .card{padding:25px}
+}
+@media print{
+  body:before,body:after{display:none}
+  body{background:#fff;color:#111}
+  nav,.hero-buttons,footer .footer-links{display:none!important}
+  .card,.trust-item,.about-copy,.about-visual,.location-box,.quick-link{box-shadow:none;break-inside:avoid}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header id="home">
+
+  <div class="brand">
+
+    <img src="veza.png" class="logo" alt="GM Veza Hospital logo">
+
+    <div class="brand-text">
+
+      <h1>GM VEZA HOSPITAL</h1>
+
+      <p class="tagline">Your Trusted Health Partner in Recovery</p>
+
+      <p class="contact-line">Tel: <a href="tel:0715513893">0715513893</a> &nbsp;|&nbsp; <a href="mailto:gmvezahospital40@gmail.com">gmvezahospital40@gmail.com</a></p>
+
+      <p class="motto">Quality Healthcare • Compassion • Excellence</p>
+
+    </div>
+
+    <img src="moh.png" class="logo" alt="Ministry of Health logo">
+
+  </div>
+
+</header>
+
+<nav aria-label="Main navigation"><div class="nav-inner">
+
+  <a href="*#home"*>Home</a><a href="*#about"*>About Us</a><a href="*#services"*>Services</a><a href="*#team"*>Our Team</a><a href="*#documents"*>Downloads</a><a href="*#forms"*>Medical Forms</a><a href="*#location"*>Location</a><a href="*#contact"*>Contact</a>
+
+</div></nav>
+
+<main class="container">
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <span class="eyebrow">COMPASSION • CARE • RECOVERY</span>
+
+      <h2>Welcome to GM Veza Hospital</h2>
+
+      <p>Your trusted health partner in recovery. We aim to provide compassionate, respectful and patient-centred healthcare for individuals and families in Rioma–Nyakongo and surrounding communities.</p>
+
+      <div class="hero-buttons"><a class="btn btn-white" href="*#services"*>Explore Our Services</a><a class="btn btn-outline" href="*#documents"*>📄 Download Documents</a><a class="btn btn-green" href="tel:0715513893">☎ Call the Hospital</a></div>
+
+    </div>
+
+  </section>
+
+  <div class="trust-strip" aria-label="Hospital values">
+
+    <div class="trust-item"><span class="big">🩺</span><strong>Patient-centred care</strong></div>
+
+    <div class="trust-item"><span class="big">💙</span><strong>Respect and compassion</strong></div>
+
+    <div class="trust-item"><span class="big">🧪</span><strong>Clinical services</strong></div>
+
+    <div class="trust-item"><span class="big">🤝</span><strong>Community wellbeing</strong></div>
+
+  </div>
+
+  <section id="about">
+
+    <h2 class="section-title">About GM Veza Hospital</h2>
+
+    <p class="section-intro">Healthcare information, service links and essential patient documents in one convenient place.</p>
+
+    <div class="about-panel">
+
+      <div class="about-copy">
+
+        <h3>Care with dignity. Support through recovery.</h3>
+
+        <p>GM Veza Hospital serves patients and families with a focus on respectful communication, patient safety and continuity of care. This website helps visitors find hospital service information and access available forms and documents.</p>
+
+        <ul class="feature-list">
+
+          <li><span class="check">✓</span><span>Patient and family support throughout care.</span></li>
+
+          <li><span class="check">✓</span><span>Easy access to inpatient, discharge and maternity documents.</span></li>
+
+          <li><span class="check">✓</span><span>Contact details and directions for visitors.</span></li>
+
+          <li><span class="check">✓</span><span>Professional teamwork and clear clinical documentation.</span></li>
+
+        </ul>
+
+      </div>
+
+      <div class="about-visual">
+
+        <div class="cross">✚</div><h3>Your Health Matters</h3>
+
+        <p>Our commitment is to make healthcare information easier to access and help patients know where to find the right forms and contact the hospital team.</p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="services">
+
+    <h2 class="section-title">Our Healthcare Services</h2>
+
+    <p class="section-intro">Explore service areas and related hospital resources. Please contact the hospital to confirm service availability and clinic hours.</p>
+
+    <div class="cards">
+
+      <article class="card service-card"><div class="card-icon">🩺</div><h3>Outpatient Care</h3><p>Consultation, clinical assessment, treatment plans and follow-up documentation.</p><a href="outpatient.html">Open Outpatient Page →</a></article>
+
+      <article class="card service-card"><div class="card-icon">🛏️</div><h3>Inpatient Care</h3><p>Admission-related documents, inpatient file resources and discharge paperwork.</p><a href="inpatient.html">Open Inpatient Page →</a></article>
+
+      <article class="card service-card"><div class="card-icon">🤰</div><h3>Maternity Services</h3><p>Access maternity-related file and discharge documents from the downloads section.</p><a href="*#documents"*>View Maternity Documents →</a></article>
+
+      <article class="card service-card"><div class="card-icon">🤱</div><h3>Antenatal Care (ANC)</h3><p>Find the ANC form cover listed in the document download centre.</p><a href="*#documents"*>Download ANC Form Cover →</a></article>
+
+      <article class="card service-card"><div class="card-icon">🧪</div><h3>Laboratory Resources</h3><p>Open the laboratory page for related documentation and forms.</p><a href="lab.html">Open Laboratory Page →</a></article>
+
+      <article class="card service-card"><div class="card-icon">📋</div><h3>Patient Documentation</h3><p>Find patient forms, flowchart resources and other hospital documents.</p><a href="*#documents"*>Browse Documents →</a></article>
+
+    </div>
+
+  </section>
+
+  <section id="team">
+
+    <h2 class="section-title">Our Healthcare Team</h2>
+
+    <p class="section-intro">A coordinated care team supports patients through assessment, treatment, nursing care and follow-up.</p>
+
+    <div class="doctor-grid">
+
+      <article class="card team-card"><div class="avatar">👨‍⚕️</div><h3>Doctors & Clinicians</h3><p>Clinical assessment, diagnosis, treatment planning and referrals.</p><small>For appointments, contact reception.</small></article>
+
+      <article class="card team-card"><div class="avatar">👩‍⚕️</div><h3>Nursing Team</h3><p>Patient monitoring, nursing support, education and continuity of care.</p><small>Here to support patients and families.</small></article>
+
+      <article class="card team-card"><div class="avatar">🧑‍⚕️</div><h3>Maternity & Support Team</h3><p>Support for maternity-related care and patient documentation.</p><small>Ask the hospital about clinic availability.</small></article>
+
+    </div>
+
+  </section>
+
+  <section id="documents">
+
+    <h2 class="section-title">Medical Documents Download Centre</h2>
+
+    <p class="section-intro">Choose a document to download. Keep each PDF in the same folder as this website file, and make sure its filename matches the link exactly.</p>
+
+    <div class="cards">
+
+      <article class="card resource-card"><div class="card-icon">🛏️</div><h3>Inpatient Documents</h3><ul class="document-list">
+
+        <li><a href="file.pdf" download><span>Inpatient File</span><span class="download-label">PDF ↓</span></a></li>
+
+        <li><a href="cover.pdf" download><span>Inpatient File Cover</span><span class="download-label">PDF ↓</span></a></li>
+
+      </ul></article>
+
+      <article class="card resource-card"><div class="card-icon">📄</div><h3>Discharge & Clinical Documents</h3><ul class="document-list">
+
+        <li><a href="discharge.pdf" download><span>Discharge Form</span><span class="download-label">PDF ↓</span></a></li>
+
+        <li><a href="flowchart.pdf" download><span>Patient Flowchart</span><span class="download-label">PDF ↓</span></a></li>
+
+      </ul></article>
+
+      <article class="card resource-card"><div class="card-icon">🤰</div><h3>Maternity Documents</h3><ul class="document-list">
+
+        <li><a href="mert.pdf" download><span>Maternity Discharge Form</span><span class="download-label">PDF ↓</span></a></li>
+
+        <li><a href="book.pdf" download><span>Maternity Book Cover</span><span class="download-label">PDF ↓</span></a></li>
+
+        <li><a href="mertanity.pdf" download><span>Maternity Cover</span><span class="download-label">PDF ↓</span></a></li>
+
+      </ul></article>
+
+      <article class="card resource-card"><div class="card-icon">🤱</div><h3>Antenatal Care</h3><ul class="document-list">
+
+        <li><a href="anc.pdf" download><span>ANC Form Cover</span><span class="download-label">PDF ↓</span></a></li>
+
+      </ul><p style="margin-top:12px;font-size:13px">If a file does not download, check that the PDF is uploaded and named correctly.</p></article>
+
+      <article class="card"><div class="card-icon">🧪</div><h3>Clinical Resources</h3><ul class="document-list">
+
+        <li><a href="lab.html"><span>Laboratory Page</span><span class="download-label">Open →</span></a></li>
+
+        <li><a href="REFERAL.HTML"><span>Referral Form</span><span class="download-label">Open →</span></a></li>
+
+        <li><a href="letter.html"><span>Medical Letter</span><span class="download-label">Open →</span></a></li>
+
+      </ul></article>
+
+      <article class="card"><div class="card-icon">📁</div><h3>Other Hospital Resources</h3><ul class="document-list">
+
+        <li><a href="register.html"><span>Patient Registration</span><span class="download-label">Open →</span></a></li>
+
+        <li><a href="card.html"><span>Patient Card</span><span class="download-label">Open →</span></a></li>
+
+        <li><a href="list.html"><span>Patient List</span><span class="download-label">Open →</span></a></li>
+
+      </ul></article>
+
+    </div>
+
+  </section>
+
+  <section id="forms">
+
+    <h2 class="section-title">Hospital Forms & Quick Access</h2>
+
+    <p class="section-intro">Quickly open common forms and service pages.</p>
+
+    <div class="quick-links">
+
+      <a class="quick-link" href="register.html">👤 Patient Registration</a>
+
+      <a class="quick-link" href="REFERAL.HTML">📝 Referral Form</a>
+
+      <a class="quick-link" href="lab.html">🧪 Laboratory</a>
+
+      <a class="quick-link" href="card.html">🪪 Patient Card</a>
+
+      <a class="quick-link" href="letter.html">✉️ Medical Letter</a>
+
+      <a class="quick-link" href="inpatient.html">🛏️ Inpatient</a>
+
+      <a class="quick-link" href="outpatient.html">🩺 Outpatient</a>
+
+      <a class="quick-link" href="discharge.html">📄 Discharge Page</a>
+
+      <a class="quick-link constitution-link" href="constitution.html">📜 Hospital Constitution <span class="download-label">OPEN →</span></a>
+
+      <a class="quick-link" href="policy.html">📘 Policies</a>
+
+      <a class="quick-link" href="rule.html">📋 Rules</a>
+
+      <a class="quick-link" href="appointment.html">📅 Appointments</a>
+
+    </div>
+
+  </section>
+
+  <section id="location">
+
+    <h2 class="section-title">Find Us & Contact the Hospital</h2>
+
+    <p class="section-intro">GM Veza Hospital is located in the Rioma–Nyakongo area. Contact the hospital for directions or to confirm details before travelling.</p>
+
+    <div class="location-panel">
+
+      <div class="location-box"><h3>📍 Location & Contact</h3><ul class="contact-list">
+
+        <li><span>📍</span><span><strong>Location:</strong> Rioma – Nyakongo, Kenya</span></li>
+
+        <li><span>☎️</span><span><strong>Telephone:</strong> <a href="tel:0715513893">0715513893</a></span></li>
+
+        <li><span>✉️</span><span><strong>Email:</strong> <a href="mailto:gmvezahospital40@gmail.com">gmvezahospital40@gmail.com</a></span></li>
+
+        <li><span>📮</span><span><strong>Postal address:</strong> P.O. Box 612-40200, Kisumu, Kenya</span></li>
+
+      </ul><p style="margin-top:16px"><a class="btn btn-blue" href="https://www.google.com/maps/search/?api=1&query=Rioma+Nyakongo+Kenya" target="_blank" rel="noopener noreferrer">Open Map Search ↗</a></p></div>
+
+      <div class="location-box"><h3>💬 Get in Touch</h3><p>For appointments, document questions, directions or information about available services, contact the hospital directly.</p><p style="margin:15px 0"><a class="btn btn-green" href="tel:0715513893">Call 0715513893</a></p><p><a class="btn btn-blue" href="mailto:gmvezahospital40@gmail.com">Email the Hospital</a></p></div>
+
+    </div>
+
+  </section>
+
+  <section id="help" class="help-panel">
+
+    <h3>Need Help Using This Website?</h3>
+
+    <p><strong>To download a PDF:</strong> select the PDF link in the download centre. If the document opens in your browser, use the browser's download icon.</p>
+
+    <p><strong>If a link does not work:</strong> confirm the named PDF is uploaded to the same folder as this HTML page and that the filename matches exactly, including spelling.</p>
+
+    <p><strong>For assistance:</strong> call <a href="tel:0715513893">0715513893</a> or email <a href="mailto:gmvezahospital40@gmail.com">gmvezahospital40@gmail.com</a>.</p>
+
+  </section>
+
+</main>
+
+<footer id="contact">
+
+  <h2>GM VEZA HOSPITAL</h2><p>Your Trusted Health Partner in Recovery</p>
+
+  <div class="footer-links"><a href="tel:0715513893">☎ 0715513893</a><a href="mailto:gmvezahospital40@gmail.com">✉ gmvezahospital40@gmail.com</a><a href="*#location"*>📍 Rioma – Nyakongo, Kenya</a></div>
+
+  <p>P.O. Box 612-40200, Kisumu, Kenya</p>
+
+  <p style="margin-top:10px;font-size:13px">© <span id="year"></span> GM Veza Hospital. All rights reserved.</p>
+
+</footer>
+
+<script>document.getElementById("year").textContent=new Date().getFullYear();</script>
+
+</body>
+
+</html>

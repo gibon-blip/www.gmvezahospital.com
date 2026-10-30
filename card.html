@@ -1,0 +1,877 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GM Veza Hospital - OPD Attendance Card</title>
+
+<style>
+* { box-sizing: border-box; }
+
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+:root {
+    --blue: #0756a6;
+    --dark-blue: #063b79;
+    --green: #079447;
+    --pale-blue: #eaf5ff;
+    --pale-green: #e9faed;
+    --line: #14518c;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #10223a;
+    background: #e8edf4;
+}
+
+/* TOOLBAR */
+.toolbar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px;
+}
+
+.toolbar button {
+    padding: 11px 22px;
+    border: none;
+    border-radius: 5px;
+    background: var(--blue);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.toolbar .pdf-button { background: var(--green); }
+
+/* A4 PAGE */
+.print-area {
+    position: relative;
+    isolation: isolate;
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto 15px;
+    padding: 3mm;
+    border: 1px solid var(--blue);
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* PAGE ONE WATERMARK */
+.print-area::before {
+    content: "";
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120mm;
+    height: 120mm;
+    background: url("veza.jpg") center / contain no-repeat;
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.print-area > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2mm;
+    flex: 0 0 23mm;
+    height: 23mm;
+    min-height: 23mm;
+    padding: 1mm 2mm;
+    border-top: 1mm solid var(--blue);
+    border-bottom: 2px solid var(--green);
+}
+
+.logo-area {
+    width: 26mm;
+    flex: 0 0 26mm;
+    text-align: center;
+}
+
+.logo-area img {
+    width: 25mm;
+    height: 20mm;
+    object-fit: contain;
+}
+
+.header-text {
+    flex: 1;
+    text-align: center;
+    line-height: 1.15;
+}
+
+.republic {
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.ministry {
+    color: var(--green);
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 0.5mm;
+}
+
+.facility {
+    color: var(--blue);
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 0.5mm;
+}
+
+.contact {
+    font-size: 9px;
+    font-weight: bold;
+    margin-top: 0.5mm;
+}
+
+.tagline {
+    font-size: 8px;
+    font-style: italic;
+    color: var(--green);
+    font-weight: bold;
+    margin-top: 0.5mm;
+}
+
+.opd-number {
+    width: 27mm;
+    flex: 0 0 27mm;
+    text-align: center;
+    color: var(--dark-blue);
+    background: var(--pale-blue);
+    border: 1px solid var(--blue);
+    border-radius: 1mm;
+    padding: 1.5mm 1mm;
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.opd-blank {
+    display: block;
+    height: 5mm;
+    border-bottom: 1px solid var(--blue);
+    margin-top: 1mm;
+}
+
+/* SECTION TITLES */
+.section-title {
+    flex: 0 0 auto;
+    background: var(--blue);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 1mm;
+    margin-top: 1mm;
+    border-radius: 1mm;
+}
+
+/* PATIENT DETAILS */
+.patient-details {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 9px;
+    margin-top: 0.8mm;
+    flex: 0 0 auto;
+}
+
+.patient-details td {
+    border: 1px solid var(--line);
+    height: 5.5mm;
+    padding: 0.5mm 1.2mm;
+    vertical-align: middle;
+}
+
+.patient-details .label {
+    font-weight: bold;
+    background: var(--pale-blue);
+}
+
+.sex-box {
+    display: inline-block;
+    width: 3mm;
+    height: 3mm;
+    border: 1px solid #222;
+    vertical-align: middle;
+    margin: 0 0.5mm;
+}
+
+/* VITAL SIGNS */
+.vitals-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 8.5px;
+    margin-top: 0.8mm;
+    flex: 0 0 auto;
+}
+
+.vitals-table th,
+.vitals-table td {
+    border: 1px solid var(--line);
+    height: 5.5mm;
+    padding: 0.5mm;
+    text-align: center;
+}
+
+.vitals-table th {
+    background: var(--pale-green);
+    color: #16482d;
+    font-weight: bold;
+}
+
+/* PAGE ONE VISIT TABLE */
+.visit-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 0.8mm;
+    font-size: 8.5px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.visit-table col:nth-child(1) { width: 19%; }
+.visit-table col:nth-child(2) { width: 45%; }
+.visit-table col:nth-child(3) { width: 36%; }
+
+.visit-table thead { display: table-header-group; }
+
+.visit-table th {
+    height: 7mm;
+    border: 1px solid var(--line);
+    background: var(--pale-blue);
+    color: var(--dark-blue);
+    padding: 0.5mm;
+    text-align: center;
+}
+
+.visit-table tbody tr { height: 9mm; }
+
+.visit-table td {
+    height: 9mm;
+    padding: 0.5mm;
+    vertical-align: top;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+}
+
+.visit-table .separator td,
+.visit-table .last-row td {
+    border-bottom: 1px solid var(--line);
+}
+
+/* CUT GUIDE */
+.cut-guide {
+    flex: 0 0 5mm;
+    min-height: 5mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2mm;
+    color: var(--blue);
+    font-size: 8px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.cut-guide .dash {
+    flex: 1;
+    border-top: 1px dashed var(--blue);
+}
+
+.scissors {
+    color: var(--green);
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* DETACHABLE PATIENT CARD */
+.lower-card {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    height: 34mm;
+    min-height: 34mm;
+    max-height: 34mm;
+    flex: 0 0 34mm;
+    margin: 0;
+    border: 1.5px solid var(--green);
+    border-radius: 2mm;
+    padding: 1.2mm 2mm;
+    background: linear-gradient(
+        110deg,
+        #e9faed 0%,
+        #ffffff 55%,
+        #e8f4ff 100%
+    );
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lower-card::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42mm;
+    height: 25mm;
+    background: url("veza.jpg") center / contain no-repeat;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.lower-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.lower-header {
+    height: 12mm;
+    min-height: 12mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2mm;
+    border-bottom: 1px solid var(--green);
+    padding-bottom: 0.5mm;
+}
+
+.lower-logo {
+    width: 24mm;
+    height: 9mm;
+    object-fit: contain;
+    flex: 0 0 24mm;
+}
+
+.lower-title {
+    flex: 1;
+    text-align: center;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1.15;
+}
+
+.lower-subtitle {
+    display: block;
+    color: var(--green);
+    font-size: 8px;
+    font-weight: bold;
+    margin-top: 0.5mm;
+}
+
+.lower-phone {
+    display: block;
+    color: #087c36;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    margin-top: 0.5mm;
+    line-height: 1.1;
+}
+
+.lower-opd {
+    flex: 0 0 26mm;
+    width: 26mm;
+    border: 1px solid var(--blue);
+    border-radius: 1mm;
+    background: var(--pale-blue);
+    color: var(--dark-blue);
+    padding: 0.5mm;
+    text-align: center;
+    font-size: 8px;
+    font-weight: bold;
+}
+
+.lower-opd-line {
+    display: block;
+    height: 3.5mm;
+    border-bottom: 1px solid var(--blue);
+    margin-top: 0.5mm;
+}
+
+.card-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 1mm;
+    font-size: 8.5px;
+}
+
+.card-details-table td {
+    border: 1px solid var(--line);
+    height: 5.5mm;
+    padding: 0.5mm 1mm;
+    vertical-align: middle;
+}
+
+.card-details-table .label {
+    background: var(--pale-blue);
+    color: var(--dark-blue);
+    font-weight: bold;
+}
+
+.card-details-table .phone-label {
+    background: var(--pale-green);
+    color: #16482d;
+    font-weight: bold;
+}
+
+.card-contact {
+    margin-top: 1.5mm;
+    padding: 1.2mm;
+    background: #fff4cc;
+    border: 1px solid #d6a300;
+    border-radius: 1mm;
+    color: #674700;
+    font-size: 9px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* PAGE TWO: WATERMARK + THREE-COLUMN TABLE */
+.back-page {
+    page-break-before: always;
+    padding: 3mm;
+}
+
+/* This watermark is intentionally enabled on page two */
+.back-page::before {
+    content: "";
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 145mm;
+    height: 145mm;
+    background: url("veza.jpg") center / contain no-repeat;
+    opacity: 0.085;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.table-only-page {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-only-page .back-visit-table {
+    width: 100%;
+    flex: 1 1 auto;
+    height: auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 0;
+    font-size: 14px;
+}
+
+.back-visit-table col:nth-child(1) { width: 20%; }
+.back-visit-table col:nth-child(2) { width: 45%; }
+.back-visit-table col:nth-child(3) { width: 35%; }
+
+.back-visit-table thead { display: table-header-group; }
+
+.back-visit-table th {
+    height: 10mm;
+    border: 1px solid var(--line);
+    background: var(--pale-blue);
+    color: var(--dark-blue);
+    padding: 1mm;
+    text-align: center;
+}
+
+.back-visit-table td {
+    height: 17mm;
+    padding: 1mm;
+    vertical-align: top;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.back-visit-table tbody tr:first-child td {
+    border-top: 1px solid var(--line);
+}
+
+.back-visit-table tbody tr:last-child td {
+    border-bottom: 1px solid var(--line);
+}
+
+.page-two-footer {
+    margin-top: auto;
+    padding: 3mm 1mm 1mm;
+    border-top: 1px solid var(--green);
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--dark-blue);
+    line-height: 1.6;
+    flex: 0 0 auto;
+    background: rgba(255,255,255,.76);
+}
+
+.page-two-footer span { display: block; }
+
+.page-two-footer .motto {
+    color: var(--green);
+    font-size: 14px;
+}
+
+/* SCREEN PREVIEW */
+@media screen {
+    .print-area {
+        box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+    }
+
+    .back-page { margin-top: 15px; }
+}
+
+/* PRINT */
+@media print {
+    html, body {
+        width: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .toolbar,
+    .no-print {
+        display: none !important;
+    }
+
+    .print-area {
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 3mm !important;
+        border: 1px solid var(--blue) !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        break-after: page !important;
+        page-break-after: always !important;
+    }
+
+    .main-header {
+        flex: 0 0 23mm !important;
+        height: 23mm !important;
+        min-height: 23mm !important;
+    }
+
+    .patient-details td,
+    .vitals-table th,
+    .vitals-table td {
+        height: 5.5mm !important;
+    }
+
+    .visit-table {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+    }
+
+    .visit-table th { height: 7mm !important; }
+
+    .visit-table tbody tr,
+    .visit-table td {
+        height: 9mm !important;
+    }
+
+    .cut-guide {
+        flex: 0 0 5mm !important;
+        min-height: 5mm !important;
+    }
+
+    .lower-card {
+        flex: 0 0 34mm !important;
+        height: 34mm !important;
+        min-height: 34mm !important;
+        max-height: 34mm !important;
+        margin: 0 !important;
+    }
+
+    .back-page {
+        page-break-before: always !important;
+        break-before: page !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    .back-page::before {
+        display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .back-visit-table {
+        flex: 1 1 auto !important;
+        height: auto !important;
+    }
+
+    .page-two-footer {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="toolbar no-print">
+    <button type="button" onclick="printForm()">Print Form</button>
+    <button type="button" class="pdf-button" onclick="downloadPDF()">
+        Download PDF
+    </button>
+</div>
+
+<!-- PAGE 1: MAIN FORM AND FRONT OF PATIENT CARD -->
+<main class="print-area" id="printArea">
+
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="veza.png" alt="GM Veza Hospital Logo">
+        </div>
+
+        <div class="header-text">
+            <div class="republic">REPUBLIC OF KENYA</div>
+            <div class="ministry">MINISTRY OF HEALTH</div>
+            <div class="facility">GM VEZA HOSPITAL</div>
+            <div class="contact">TEL: 0715513893</div>
+            <div class="tagline">Your trusted health partner in recovery</div>
+        </div>
+
+        <div class="opd-number">
+            OPD. NO.
+            <span class="opd-blank"></span>
+        </div>
+    </header>
+
+    <div class="section-title">PATIENT DETAILS</div>
+
+    <table class="patient-details">
+        <colgroup>
+            <col style="width:22%">
+            <col style="width:48%">
+            <col style="width:30%">
+        </colgroup>
+        <tbody>
+            <tr>
+                <td class="label">Patient's Name:</td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="label">Age:</td>
+                <td></td>
+                <td class="label">
+                    Sex:
+                    <span class="sex-box"></span> M
+                    <span class="sex-box"></span> F
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Village:</td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="label">Sub-location:</td>
+                <td></td>
+                <td class="label">Telephone:</td>
+            </tr>
+            <tr>
+                <td class="label">ID No.:</td>
+                <td colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">VITAL SIGNS</div>
+
+    <table class="vitals-table">
+        <thead>
+            <tr>
+                <th>Weight (kg)</th>
+                <th>Height (cm)</th>
+                <th>Temperature (°C)</th>
+                <th>B.P. (mmHg)</th>
+                <th>BMI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">OUTPATIENT ATTENDANCE / VISIT DETAILS</div>
+
+    <table class="visit-table">
+        <colgroup><col><col><col></colgroup>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Visit Details / Notes</th>
+                <th>Treatment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr class="separator"><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr class="last-row"><td></td><td></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <div class="cut-guide">
+        <span class="scissors">✂</span>
+        <span class="dash"></span>
+        <span>CUT HERE FOR PATIENT</span>
+        <span class="dash"></span>
+        <span class="scissors">✂</span>
+    </div>
+
+    <section class="lower-card">
+        <div class="lower-header">
+            <img class="lower-logo" src="veza.jpg" alt="GM Veza Hospital Logo">
+
+            <div class="lower-title">
+                GM VEZA HOSPITAL
+                <span class="lower-subtitle">OUTPATIENT ATTENDANCE CARD</span>
+                <span class="lower-phone">TEL: 0715513893</span>
+            </div>
+
+            <div class="lower-opd">
+                OPD. NO.
+                <span class="lower-opd-line"></span>
+            </div>
+        </div>
+
+        <table class="card-details-table">
+            <colgroup>
+                <col style="width:23%">
+                <col style="width:47%">
+                <col style="width:12%">
+                <col style="width:18%">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td class="label">Patient's Name:</td>
+                    <td></td>
+                    <td class="phone-label">Tel:</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="card-contact">
+            KEEP THIS CARD SAFE!
+            <br>
+            BRING IT WITH YOU EVERY TIME YOU RETURN TO GM VEZA HOSPITAL.
+        </div>
+    </section>
+</main>
+
+<!-- PAGE 2: ATTENDANCE TABLE WITH VEZA WATERMARK -->
+<section class="print-area back-page table-only-page" id="backPage">
+
+    <table class="back-visit-table">
+        <colgroup>
+            <col style="width:20%">
+            <col style="width:45%">
+            <col style="width:35%">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Date of Visit</th>
+                <th>Visit Details / Notes</th>
+                <th>Treatment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <footer class="page-two-footer">
+        <span>Keep this card safe and present it at every visit.</span>
+        <span class="motto">Your trusted health partner in recovery</span>
+        <span>GM VEZA HOSPITAL | TEL: 0715513893</span>
+    </footer>
+</section>
+
+<script>
+function waitForImages() {
+    const images = Array.from(document.querySelectorAll("img"));
+
+    return Promise.all(images.map(function(img) {
+        if (img.complete) return Promise.resolve();
+
+        return new Promise(function(resolve) {
+            img.onload = resolve;
+            img.onerror = resolve;
+        });
+    }));
+}
+
+function printForm() {
+    waitForImages().then(function() {
+        window.print();
+    });
+}
+
+/* Opens the browser print dialog so the user can choose Save as PDF. */
+function downloadPDF() {
+    waitForImages().then(function() {
+        window.print();
+    });
+}
+</script>
+
+</body>
+</html>
